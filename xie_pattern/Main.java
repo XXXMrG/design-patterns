@@ -20,7 +20,7 @@ public class Main {
 class MainFrame extends JFrame{
 
     public MainFrame(){
-        add(new MainComposite());
+        add(new MainComposite(this));
         pack();
     }
 

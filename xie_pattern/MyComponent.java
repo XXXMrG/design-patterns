@@ -17,11 +17,13 @@ public class MyComponent extends JComponent {
     private double width, height;
     private ComponentFactory factory;
     private int stage = 0;
-    private ArrayList<Ellipse2D> conerS;
-    private ArrayList<Point2D> pointS;
+    private int click = 0;
+    public ArrayList<Ellipse2D> conerS;
+
+    public MyComponent(){}
+
     public MyComponent(Point2D startPoint, double width, double height){
         conerS = new ArrayList<>();
-        pointS = new ArrayList<>();
         factory = new ComponentFactory();
         this.startPoint = startPoint;
         this.width = width;
@@ -37,13 +39,31 @@ public class MyComponent extends JComponent {
         this.height = height;
     }
 
+    public double getMyHeight() {
+        return height;
+    }
+
+    public double getMyWidth() {
+        return width;
+    }
+
+    public Point2D getLeftUpPoint(){
+        return leftUpPoint;
+    }
+
+    public Rectangle2D getRectangle(){
+        return rectangle;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         initUi();
         graphics2D.draw(rectangle);
-        for(Ellipse2D e : conerS){
-            graphics2D.fill(e);
+        if(click == 1){
+            for(Ellipse2D e : conerS){
+                graphics2D.fill(e);
+            }
         }
     }
 
@@ -92,7 +112,16 @@ public class MyComponent extends JComponent {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-
+            if(rectangle.contains(e.getPoint())){
+                if(e.getClickCount() == 1){
+                    click = 1;
+                    repaint();
+                }
+            }
+            else{
+                click = 0;
+                repaint();
+            }
         }
 
         @Override
@@ -126,8 +155,15 @@ public class MyComponent extends JComponent {
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
             else if(findPoints(e.getPoint()) != null){
-                stage = 99;
                 setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+                if(leftUpCorner.contains(e.getPoint()))
+                    stage = 2;
+                if (leftDownCorner.contains(e.getPoint()))
+                    stage = 4;
+                if (rightUpCorner.contains(e.getPoint()))
+                    stage = 6;
+                if (rightDownCorner.contains(e.getPoint()))
+                    stage = 8;
             }
             else{
                 stage = 0;
@@ -138,15 +174,33 @@ public class MyComponent extends JComponent {
         @Override
         public void mouseDragged(MouseEvent e) {
             conerS.clear();
-            if(stage == 1){
-                rectangle.setFrame(e.getX() - width / 2, e.getY() - height / 2, width, height);
-                repaint();
+            switch (stage){
+                case 1:{
+                    rectangle.setFrame(e.getX() - width / 2, e.getY() - height / 2, width, height);
+                    break;
+                }
+                case 2:{
+                    rectangle.setFrameFromDiagonal(e.getPoint(), rightDownPoint);
+                    setMySize(rectangle.getWidth(), rectangle.getHeight());
+                    break;
+                }
+                case 4:{
+                    rectangle.setFrameFromDiagonal(e.getPoint(), rightUpPoint);
+                    setMySize(rectangle.getWidth(), rectangle.getHeight());
+                    break;
+                }
+                case 6:{
+                    rectangle.setFrameFromDiagonal(e.getPoint(), leftDownPoint);
+                    setMySize(rectangle.getWidth(), rectangle.getHeight());
+                    break;
+                }
+                case 8: {
+                    rectangle.setFrameFromDiagonal(e.getPoint(), leftUpPoint);
+                    setMySize(rectangle.getWidth(), rectangle.getHeight());
+                    break;
+                }
             }
-            else if(stage == 99){
-                rectangle.setFrameFromDiagonal(e.getPoint(), rightDownPoint);
-                setMySize(rectangle.getWidth(), rectangle.getHeight());
-                repaint();
-            }
+            repaint();
         }
     }
 
