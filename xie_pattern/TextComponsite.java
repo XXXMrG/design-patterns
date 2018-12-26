@@ -9,36 +9,52 @@ import java.awt.geom.Rectangle2D;
 
 public class TextComponsite extends MyComponent implements Observer{
 
-    private Rectangle2D rectangle;
+    private Rectangle2D rectangle, rectangleUp, rectangleDown;
     private EditorPanel dialog = null;
-    String messag;
+    String message;
     Font f;
     private Frame ParentFrame;
+    private ComponentFactory factory;
+    private double mywidth, myheight;
 
     public TextComponsite(Point2D startPoint, double width, double height, Frame frame){
         super(startPoint, width, height);
+        factory = new ComponentFactory();
         ParentFrame = frame;
         message = "Hello, World!";
-        f = new Font("Serif", Font.BOLD, 10);
+        f = new Font("Serif", Font.BOLD, 25);
         this.rectangle = super.getRectangle();
+        mywidth = 100;
+        myheight = f.getSize();
+        rectangleUp = (Rectangle2D) factory.createComponent("rect");
+        rectangleUp.setFrame(0, 0, mywidth, myheight);
+        rectangleDown = (Rectangle2D) factory.createComponent("rect");
+        rectangleDown.setFrame(0, 0, mywidth, myheight);
         addMouseListener(new MouseHandler());
     }
 
 
     @Override
     protected void paintComponent(Graphics g) {
-        int stringMessageX = (int) (rectangle.getX());
-        int stringMessageY = (int) (rectangle.getY() + f.getSize());
-        super.paintComponent(g);
+        int stringMessageX = (int) (rectangleUp.getX());
+        int stringMessageY = (int) (rectangleUp.getY() + f.getSize());
         Graphics2D graphics2D = (Graphics2D)g;
+        graphics2D.draw(rectangleUp);
         graphics2D.setFont(f);
         graphics2D.drawString(message, stringMessageX, stringMessageY);
+        stringMessageX = (int) (rectangleDown.getX());
+        stringMessageY = (int) (rectangleDown.getY() + f.getSize());
+        graphics2D.draw(rectangleDown);
+        graphics2D.setFont(f);
+        graphics2D.drawString("0 米", stringMessageX, stringMessageY);
     }
 
     @Override
-    public void update(Point2D point) {
+    public void update(MyComponent component, int size) {
         super.conerS.clear();
-        rectangle.setFrame(point.getX(), point.getY(), super.getMyWidth(), super.getMyHeight());
+        rectangleUp.setFrame(component.getRectangle().getX(), component.getRectangle().getY(), mywidth, myheight);
+        rectangleDown.setFrame(component.getRectangle().getX(), component.getRectangle().getY() + component.getRectangle().getHeight(), mywidth, myheight);
+        message = component.getRectangle().getHeight() + "米";
         repaint();
     }
 
@@ -66,7 +82,7 @@ public class TextComponsite extends MyComponent implements Observer{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if(rectangle.contains(e.getPoint())){
+            if(rectangleUp.contains(e.getPoint()) || rectangleDown.contains(e.getPoint())){
                 if(e.getClickCount() >= 2)
                     isShowDialog();
             }

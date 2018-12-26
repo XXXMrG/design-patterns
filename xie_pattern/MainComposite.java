@@ -22,11 +22,15 @@ public class MainComposite extends JComponent {
     private void initUI(Frame frame){
         RectComponsite myComponent = new RectComponsite(new Point2D.Double(100, 100), 100, 100);
         add(myComponent);
-        myComponent.setBounds(500, 0, 1600, 1000);
+        myComponent.setBounds(400, 0, 600, 1000);
         TextComponsite textComponsite = new TextComponsite(new Point2D.Double(10, 10), 50, 50, frame);
         add(textComponsite);
         textComponsite.setBounds(10, 0, 400, 1000);
         myComponent.addObserver(textComponsite);
+        TuliComponsite tuliComponsite = new TuliComponsite(new Point2D.Double(10, 10), 400, 600);
+        add(tuliComponsite);
+        tuliComponsite.setBounds(1000, 0, 800, 1000);
+        myComponent.addObserver(tuliComponsite);
     }
 
 }

@@ -19,7 +19,6 @@ public class MyComponent extends JComponent {
     private int stage = 0;
     private int click = 0;
     public ArrayList<Ellipse2D> conerS;
-
     public MyComponent(){}
 
     public MyComponent(Point2D startPoint, double width, double height){
@@ -38,6 +37,7 @@ public class MyComponent extends JComponent {
         this.width = width;
         this.height = height;
     }
+
 
     public double getMyHeight() {
         return height;
@@ -66,6 +66,7 @@ public class MyComponent extends JComponent {
             }
         }
     }
+
 
     private void initUi(){
 
@@ -99,7 +100,7 @@ public class MyComponent extends JComponent {
         return e;
     }
 
-    private Ellipse2D findPoints(Point2D p){
+    public Ellipse2D findPoints(Point2D p){
         for(Ellipse2D r : conerS){
             if(r.contains(p)){
                 return r;
